@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LeetCode Clone (JS-only)</title>
+  <!-- Minimal, clean styling -->
+  <style>
+    :root { --bg:#0b0f1a; --panel:#12192b; --muted:#9aa4b2; --text:#e8edf3; --acc:#6da7ff; --ok:#2ecc71; --bad:#ff5c5c; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background:var(--bg); color:var(--text); }
+    header { padding:16px 20px; border-bottom:1px solid #1e2a42; position:sticky; top:0; background:rgba(11,15,26,.9); backdrop-filter: blur(6px); }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+    .grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .card { background: var(--panel); border:1px solid #1d2942; border-radius:16px; padding:16px; box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+    .title { font-weight:700; margin:0 0 6px; }
+    .muted { color: var(--muted); font-size: 14px; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; background:#172240; color:#cfe1ff; border:1px solid #263153; border-radius:12px; cursor:pointer; text-decoration:none; font-weight:600; }
+    .btn:hover { border-color:#33529a; color:#fff; }
+    .tag { font-size: 12px; padding:4px 8px; border:1px solid #2c395d; border-radius:999px; color:#b7c6e6; margin-right:6px; display:inline-block; }
+    .problem { display:flex; gap:16px; }
+    .pane { flex:1; background: var(--panel); border:1px solid #1d2942; border-radius:16px; padding:16px; }
+    textarea { width:100%; min-height: 380px; background:#0c1222; color:#e6f0ff; border:1px solid #1d2942; border-radius:12px; padding:12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 14px; }
+    pre { background:#0c1222; padding:12px; border-radius:12px; overflow:auto; border:1px solid #1d2942; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .status { font-weight:700; }
+    .ok { color: var(--ok); }
+    .bad { color: var(--bad); }
+    .spacer { height: 8px; }
+    .small { font-size:13px; }
+    .footer { margin-top: 24px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 900px) { .problem { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <div class="row" style="justify-content:space-between;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h16" stroke="#6da7ff" stroke-width="2" stroke-linecap="round"/></svg>
+        <div style="font-weight:800;">LeetCode Clone</div>
+      </div>
+      <div class="row small">
+        <span id="progress"></span>
+        <button class="btn" id="backBtn" style="display:none;">← Back</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap" id="root"></div>
+
+  <!-- React (UMD) + Babel for in-browser JSX, no build step needed -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    // ------------------------
+    // 1) Problem Definitions
+    // ------------------------
+    const PROBLEMS = [
+      {
+        id: "two-sum",
+        title: "1. Two Sum",
+        difficulty: "Easy",
+        tags: ["Array", "Hash Table"],
+        statement: `
+Given an array of integers \`nums\` and an integer \`target\`, return indices of the two numbers such that they add up to \`target\`.
+
+You may assume that each input would have **exactly one solution**, and you may not use the same element twice.
+
+Return the answer in **any order**.
+        `.trim(),
+        starterCode: `// Return indices [i, j] such that nums[i] + nums[j] === target
+// Time: O(n) expected using a map
+function twoSum(nums, target) {
+  // TODO: implement
+}
+        `.trim(),
+        functionName: "twoSum",
+        tests: [
+          { input: [[2,7,11,15], 9], expect: [0,1] },
+          { input: [[3,2,4], 6], expect: [1,2] },
+          { input: [[3,3], 6], expect: [0,1] },
+        ],
+      },
+      {
+        id: "valid-parentheses",
+        title: "20. Valid Parentheses",
+        difficulty: "Easy",
+        tags: ["Stack", "String"],
+        statement: `
+Given a string \`s\` containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+        `.trim(),
+        starterCode: `// Return true if parentheses are valid
+function isValid(s) {
+  // TODO: implement
+}
+        `.trim(),
+        functionName: "isValid",
+        tests: [
+          { input: ["()"], expect: true },
+          { input: ["()[]{}"], expect: true },
+          { input: ["(]"], expect: false },
+          { input: ["([{}])"], expect: true },
+          { input: ["([)]"], expect: false },
+        ],
+      },
+      {
+        id: "reverse-linked-list",
+        title: "206. Reverse Linked List (Array version)",
+        difficulty: "Easy",
+        tags: ["Linked List", "Two Pointers"],
+        statement: `
+Simplified version: given an array \`arr\`, return a **new array** that is the reverse of \`arr\`.
+        `.trim(),
+        starterCode: `// Return reversed copy of arr
+function reverseArray(arr) {
+  // TODO: implement
+}
+        `.trim(),
+        functionName: "reverseArray",
+        tests: [
+          { input: [[1,2,3,4,5]], expect: [5,4,3,2,1] },
+          { input: [[1]], expect: [1] },
+          { input: [[],], expect: [] },
+        ],
+      },
+    ];
+
+    // ------------- Utilities -------------
+    const getProgress = () => {
+      try {
+        const raw = localStorage.getItem("lc-progress");
+        return raw ? JSON.parse(raw) : {};
+      } catch { return {}; }
+    };
+    const setProgress = (obj) => localStorage.setItem("lc-progress", JSON.stringify(obj));
+
+    const arrayEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+    // ------------------------
+    // 2) Sandboxed Test Runner (Web Worker)
+    // ------------------------
+    function createRunner() {
+      // Worker code as a string for Blob
+      const workerCode = `
+        self.onmessage = (e) => {
+          const { userCode, fnName, tests } = e.data;
+          try {
+            // Compile user code in isolated scope
+            const exports = {};
+            // Avoid access to global "self" accidentally
+            const safeSelf = undefined;
+
+            // Build a function that defines user code
+            const define = new Function("exports", "'use strict';\\n" + userCode + "\\n;return exports;");
+            define(exports);
+
+            // The function may be global or on exports; try both
+            const candidate = (typeof self[fnName] === "function") ? self[fnName] : exports[fnName];
+
+            if (typeof candidate !== "function") {
+              postMessage({ ok:false, error: "Function '" + fnName + "' not found. Make sure the name matches." });
+              return;
+            }
+
+            for (let i = 0; i < tests.length; i++) {
+              const t = tests[i];
+              // Deep clone args to avoid mutation surprises
+              const args = JSON.parse(JSON.stringify(t.input));
+              const out = candidate.apply(null, args);
+              const ok = (Array.isArray(t.expect) && Array.isArray(out))
+                ? JSON.stringify(out) === JSON.stringify(t.expect)
+                : out === t.expect;
+              if (!ok) {
+                postMessage({ ok:false, index:i, input:t.input, expect:t.expect, got: out });
+                return;
+              }
+            }
+            postMessage({ ok:true });
+          } catch (err) {
+            postMessage({ ok:false, error: String(err && err.message || err) });
+          }
+        };
+      `;
+      const blob = new Blob([workerCode], { type: "application/javascript" });
+      return new Worker(URL.createObjectURL(blob));
+    }
+
+    // ------------------------
+    // 3) UI Components
+    // ------------------------
+    function Badge({ children }) { return <span className="tag">{children}</span>; }
+
+    function ProblemCard({ p, solved, onOpen }) {
+      return (
+        <div className="card">
+          <div className="title">{p.title}</div>
+          <div className="muted" style={{marginBottom:8}}>{p.difficulty}</div>
+          <div style={{marginBottom:10}}>
+            {p.tags.map(t => <Badge key={t}>{t}</Badge>)}
+          </div>
+          <div className="row">
+            <button className="btn" onClick={onOpen}>Open</button>
+            {solved ? <span className="status ok">✓ Solved</span> : <span className="status muted">Not solved</span>}
+          </div>
+        </div>
+      );
+    }
+
+    function Home({ onOpen }) {
+      const progress = getProgress();
+      const solvedCount = Object.values(progress).filter(Boolean).length;
+      const total = PROBLEMS.length;
+
+      React.useEffect(() => {
+        const el = document.getElementById("progress");
+        if (el) el.textContent = \`\${solvedCount}/\${total} solved\`;
+        const back = document.getElementById("backBtn");
+        if (back) back.style.display = "none";
+      }, [solvedCount, total]);
+
+      return (
+        <div>
+          <div className="row" style={{margin:"8px 0 16px"}}>
+            <div className="muted">Pick a problem to start solving.</div>
+          </div>
+          <div className="grid">
+            {PROBLEMS.map(p => (
+              <ProblemCard
+                key={p.id}
+                p={p}
+                solved={Boolean(progress[p.id])}
+                onOpen={() => onOpen(p.id)}
+              />
+            ))}
+          </div>
+          <div className="footer">
+            Tip: Your progress is saved in your browser (localStorage). Clear it from DevTools to reset.
+          </div>
+        </div>
+      );
+    }
+
+    function ProblemView({ id, onBack }) {
+      const p = PROBLEMS.find(x => x.id === id);
+      const [code, setCode] = React.useState(() => {
+        const saved = localStorage.getItem("code-" + id);
+        return saved || p.starterCode;
+      });
+      const [running, setRunning] = React.useState(false);
+      const [result, setResult] = React.useState(null);
+
+      React.useEffect(() => {
+        const el = document.getElementById("progress");
+        const progress = getProgress();
+        const solvedCount = Object.values(progress).filter(Boolean).length;
+        if (el) el.textContent = \`\${solvedCount}/\${PROBLEMS.length} solved\`;
+        const back = document.getElementById("backBtn");
+        if (back) {
+          back.style.display = "inline-flex";
+          back.onclick = onBack;
+        }
+      }, [onBack]);
+
+      const runTests = async () => {
+        setRunning(true);
+        setResult(null);
+        localStorage.setItem("code-" + id, code);
+
+        const worker = createRunner();
+        worker.onmessage = (e) => {
+          const data = e.data;
+          if (data.ok) {
+            setResult({ ok: true });
+            // mark solved
+            const prog = getProgress();
+            prog[id] = true;
+            setProgress(prog);
+          } else {
+            setResult({ ok: false, ...data });
+          }
+          worker.terminate();
+          setRunning(false);
+        };
+        worker.postMessage({ userCode: code, fnName: p.functionName, tests: p.tests });
+      };
+
+      return (
+        <div>
+          <div className="row" style={{marginBottom:12}}>
+            <div className="title" style={{fontSize:20}}>{p.title}</div>
+            <span className="tag">{p.difficulty}</span>
+          </div>
+
+          <div className="problem">
+            <div className="pane">
+              <div className="muted" style={{marginBottom:10}}>Problem</div>
+              <pre><code>{p.statement}</code></pre>
+              <div className="spacer"></div>
+              <div className="muted small">Function to implement: <code>{p.functionName}</code></div>
+              <div className="muted small">Tests: {p.tests.length}</div>
+            </div>
+
+            <div className="pane">
+              <div className="muted" style={{marginBottom:10}}>Your Code</div>
+              <textarea value={code} onChange={e => setCode(e.target.value)} spellCheck="false" />
+              <div className="row" style={{marginTop:10}}>
+                <button className="btn" disabled={running} onClick={runTests}>
+                  {running ? "Running…" : "Run Tests"}
+                </button>
+                {result && result.ok && <span className="status ok">All tests passed 🎉</span>}
+                {result && !result.ok && (
+                  <span className="status bad">Failed test {typeof result.index === "number" ? ("#" + (result.index+1)) : ""}</span>
+                )}
+              </div>
+              {result && !result.ok && (
+                <div style={{marginTop:10}}>
+                  {result.error ? (
+                    <pre><code>{String(result.error)}</code></pre>
+                  ) : (
+                    <pre><code>{`input:  ${JSON.stringify(result.input)}
+expect: ${JSON.stringify(result.expect)}
+got:    ${JSON.stringify(result.got)}`}</code></pre>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [route, setRoute] = React.useState({ name: "home" });
+
+      const openProblem = (id) => setRoute({ name: "problem", id });
+      const backHome = () => setRoute({ name: "home" });
+
+      React.useEffect(() => {
+        // Simple hash-based routing to allow reloads/share
+        const parse = () => {
+          const h = location.hash.replace(/^#/, "");
+          if (h.startsWith("p/")) {
+            const id = h.slice(2);
+            setRoute({ name: "problem", id });
+          } else {
+            setRoute({ name: "home" });
+          }
+        };
+        parse();
+        window.addEventListener("hashchange", parse);
+        return () => window.removeEventListener("hashchange", parse);
+      }, []);
+
+      const onOpen = (id) => { location.hash = "p/" + id; };
+      const onBack = () => { location.hash = ""; };
+
+      return route.name === "home"
+        ? <Home onOpen={onOpen}/>
+        : <ProblemView id={route.id} onBack={onBack} />;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
