@@ -1,0 +1,25 @@
+{
+  "name": "multilanguage-ide",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "monaco-editor": "^0.34.0",
+    "@monaco-editor/react": "^4.4.6",
+    "axios": "^1.4.0",
+    "tailwindcss": "^3.3.0",
+    "next-intl": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^18.0.0",
+    "@types/react": "^18.0.0"
+  }
+}
